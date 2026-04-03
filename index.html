@@ -5,14 +5,57 @@
 <title>Aplikasi Pajak HP</title>
 
 <style>
-body {font-family: Arial; background:#eef2f7; padding:10px;}
-.box {background:white; padding:15px; border-radius:10px; margin-bottom:15px;}
-input, select, button {width:100%; padding:10px; margin-top:10px; font-size:16px;}
-button {background:#4CAF50; color:white; border:none;}
+body {
+  font-family: Arial;
+  background: #eef2f7;
+  padding: 10px;
+}
+
+.box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  border-radius: 5px;
+  background: #4CAF50;
+  color: white;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background: #ddd;
+}
 </style>
 
 <script>
 
+// FORMAT ANGKA (TANPA RP)
 function formatAngka(angka){
   angka = Math.round(angka);
   var str = angka + "";
@@ -30,35 +73,29 @@ function formatAngka(angka){
 }
 
 function hitung(){
-
   var jenis = document.getElementById("jenis").value;
-  var nilaiText = document.getElementById("nilai").value;
+  var nilai = document.getElementById("nilai").value;
 
-  if(nilaiText === ""){
+  if(nilai==""){
     alert("Isi nilai dulu!");
     return;
   }
 
-  var nilai = Number(nilaiText);
-
-  if(isNaN(nilai)){
-    alert("Harus angka!");
-    return;
-  }
+  nilai = parseFloat(nilai);
 
   var dpp=0, ppn=0, pph=0, bruto=0, netto=0;
 
-  if(jenis==="netto"){
+  if(jenis=="netto"){
     netto = nilai;
     bruto = (111/98.5)*netto;
     dpp = bruto*100/111;
   }
-  else if(jenis==="dpp"){
+  else if(jenis=="dpp"){
     dpp = nilai;
     bruto = dpp*1.11;
     netto = bruto - (dpp*0.11) - (dpp*0.015);
   }
-  else if(jenis==="bruto"){
+  else if(jenis=="bruto"){
     bruto = nilai;
     dpp = bruto*100/111;
     netto = bruto - (dpp*0.11) - (dpp*0.015);
@@ -67,17 +104,61 @@ function hitung(){
   ppn = dpp*0.11;
   pph = dpp*0.015;
 
-  var hasilText =
+  document.getElementById("hasil").innerHTML =
     "DPP: " + formatAngka(dpp) + "<br>" +
     "PPN: " + formatAngka(ppn) + "<br>" +
     "PPh: " + formatAngka(pph) + "<br><br>" +
     "Bruto: " + formatAngka(bruto) + "<br>" +
     "Netto: " + formatAngka(netto);
 
-  document.getElementById("hasil").innerHTML = hasilText;
+  window.data = [jenis, nilai, dpp, ppn, pph, bruto, netto];
+}
 
-  // debug (biar tau kalau jalan)
-  console.log("HITUNG JALAN");
+function tambah(){
+  if(!window.data){
+    alert("Hitung dulu!");
+    return;
+  }
+
+  var t = document.getElementById("tabel");
+  var r = t.insertRow();
+
+  r.insertCell(0).innerHTML = window.data[0];
+  r.insertCell(1).innerHTML = formatAngka(window.data[1]);
+  r.insertCell(2).innerHTML = formatAngka(window.data[2]);
+  r.insertCell(3).innerHTML = formatAngka(window.data[3]);
+  r.insertCell(4).innerHTML = formatAngka(window.data[4]);
+  r.insertCell(5).innerHTML = formatAngka(window.data[5]);
+  r.insertCell(6).innerHTML = formatAngka(window.data[6]);
+  r.insertCell(7).innerHTML = "<button onclick='hapus(this)'>X</button>";
+
+  total();
+}
+
+function hapus(btn){
+  var r = btn.parentNode.parentNode;
+  r.parentNode.removeChild(r);
+  total();
+}
+
+function ambil(teks){
+  return parseFloat(teks.replace(/[^0-9]/g,"")) || 0;
+}
+
+function total(){
+  var t = document.getElementById("tabel");
+  var dpp=0, ppn=0, pph=0;
+
+  for(var i=1;i<t.rows.length;i++){
+    dpp += ambil(t.rows[i].cells[2].innerHTML);
+    ppn += ambil(t.rows[i].cells[3].innerHTML);
+    pph += ambil(t.rows[i].cells[4].innerHTML);
+  }
+
+  document.getElementById("total").innerHTML =
+    "TOTAL DPP: " + formatAngka(dpp) + "<br>" +
+    "TOTAL PPN: " + formatAngka(ppn) + "<br>" +
+    "TOTAL PPh: " + formatAngka(pph);
 }
 
 </script>
@@ -86,7 +167,7 @@ function hitung(){
 <body>
 
 <div class="box">
-<h3>Input</h3>
+<h3>Input Data</h3>
 
 <select id="jenis">
 <option value="netto">Netto</option>
@@ -97,11 +178,25 @@ function hitung(){
 <input type="number" id="nilai" placeholder="Masukkan nilai">
 
 <button onclick="hitung()">Hitung</button>
+<button onclick="tambah()">Tambah</button>
 </div>
 
 <div class="box">
 <h3>Hasil</h3>
 <div id="hasil">-</div>
+</div>
+
+<div class="box">
+<h3>Transaksi</h3>
+
+<table id="tabel">
+<tr>
+<th>Jenis</th><th>Nilai</th><th>DPP</th><th>PPN</th><th>PPh</th><th>Bruto</th><th>Netto</th><th>X</th>
+</tr>
+</table>
+
+<h4 id="total"></h4>
+
 </div>
 
 </body>

@@ -125,7 +125,7 @@ function tambah(){
   if(!window.data){
     alert("Hitung dulu!");
     return;
-  }
+  simpanData();}
 
   var t = document.getElementById("tabel");
   var r = t.insertRow();
@@ -146,6 +146,7 @@ function hapus(btn){
   var r = btn.parentNode.parentNode;
   r.parentNode.removeChild(r);
   total();
+  simpanData();
 }
 
 function ambil(teks){
@@ -171,7 +172,7 @@ function total(){
 </script>
 </head>
 
-<body>
+<body onload="loadData()">
 
 <div class="box">
 <h3>Input Data</h3>
@@ -208,3 +209,36 @@ function total(){
 
 </body>
 </html>
+// SIMPAN DATA
+function simpanData(){
+  var t = document.getElementById("tabel");
+  var data = [];
+
+  for(var i=1;i<t.rows.length;i++){
+    var row = [];
+    for(var j=0;j<7;j++){
+      row.push(t.rows[i].cells[j].innerHTML);
+    }
+    data.push(row);
+  }
+
+  localStorage.setItem("dataPajak", JSON.stringify(data));
+}
+
+// LOAD DATA
+function loadData(){
+  var data = JSON.parse(localStorage.getItem("dataPajak") || "[]");
+  var t = document.getElementById("tabel");
+
+  data.forEach(function(item){
+    var r = t.insertRow();
+
+    for(var i=0;i<7;i++){
+      r.insertCell(i).innerHTML = item[i];
+    }
+
+    r.insertCell(7).innerHTML = "<button onclick='hapus(this)'>X</button>";
+  });
+
+  total();
+}

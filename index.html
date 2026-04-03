@@ -101,13 +101,13 @@ function hitung(){
     netto = bruto - (dpp*0.11) - (dpp*0.015);
   }
 
-  ppn 11% = dpp*0.11;
-  pph 1,5% = dpp*0.015;
+  ppn = dpp*0.11;
+  pph = dpp*0.015;
 
   document.getElementById("hasil").innerHTML =
     "DPP: " + formatAngka(dpp) + "<br>" +
-    "PPN 11%: " + formatAngka(ppn) + "<br>" +
-    "PPh 1,5% : " + formatAngka(pph) + "<br><br>" +
+    "PPN: " + formatAngka(ppn) + "<br>" +
+    "PPh: " + formatAngka(pph) + "<br><br>" +
     "Bruto: " + formatAngka(bruto) + "<br>" +
     "Netto: " + formatAngka(netto);
 

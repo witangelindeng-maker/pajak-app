@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4CAF50">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pajak Barang</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4CAF50">
+
 <style>
-  <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
 body {
   font-family: Arial;
   background: #eef2f7;
@@ -62,7 +58,7 @@ th {
 
 <script>
 
-// FORMAT ANGKA (TANPA RP)
+// FORMAT ANGKA
 function formatAngka(angka){
   angka = Math.round(angka);
   var str = angka + "";
@@ -79,6 +75,7 @@ function formatAngka(angka){
   return hasil;
 }
 
+// HITUNG
 function hitung(){
   var jenis = document.getElementById("jenis").value;
   var nilai = document.getElementById("nilai").value;
@@ -121,11 +118,12 @@ function hitung(){
   window.data = [jenis, nilai, dpp, ppn, pph, bruto, netto];
 }
 
+// TAMBAH KE TABEL
 function tambah(){
   if(!window.data){
     alert("Hitung dulu!");
     return;
-  simpanData();}
+  }
 
   var t = document.getElementById("tabel");
   var r = t.insertRow();
@@ -140,8 +138,10 @@ function tambah(){
   r.insertCell(7).innerHTML = "<button onclick='hapus(this)'>X</button>";
 
   total();
+  simpanData(); // simpan otomatis
 }
 
+// HAPUS DATA
 function hapus(btn){
   var r = btn.parentNode.parentNode;
   r.parentNode.removeChild(r);
@@ -149,10 +149,12 @@ function hapus(btn){
   simpanData();
 }
 
+// AMBIL ANGKA
 function ambil(teks){
   return parseFloat(teks.replace(/[^0-9]/g,"")) || 0;
 }
 
+// HITUNG TOTAL
 function total(){
   var t = document.getElementById("tabel");
   var dpp=0, ppn=0, pph=0;
@@ -167,6 +169,40 @@ function total(){
     "TOTAL DPP: " + formatAngka(dpp) + "<br>" +
     "TOTAL PPN: " + formatAngka(ppn) + "<br>" +
     "TOTAL PPh: " + formatAngka(pph);
+}
+
+// SIMPAN DATA
+function simpanData(){
+  var t = document.getElementById("tabel");
+  var data = [];
+
+  for(var i=1;i<t.rows.length;i++){
+    var row = [];
+    for(var j=0;j<7;j++){
+      row.push(t.rows[i].cells[j].innerHTML);
+    }
+    data.push(row);
+  }
+
+  localStorage.setItem("dataPajak", JSON.stringify(data));
+}
+
+// LOAD DATA
+function loadData(){
+  var data = JSON.parse(localStorage.getItem("dataPajak") || "[]");
+  var t = document.getElementById("tabel");
+
+  data.forEach(function(item){
+    var r = t.insertRow();
+
+    for(var i=0;i<7;i++){
+      r.insertCell(i).innerHTML = item[i];
+    }
+
+    r.insertCell(7).innerHTML = "<button onclick='hapus(this)'>X</button>";
+  });
+
+  total();
 }
 
 </script>
@@ -207,38 +243,12 @@ function total(){
 
 </div>
 
+<!-- SERVICE WORKER -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
 </body>
 </html>
-// SIMPAN DATA
-function simpanData(){
-  var t = document.getElementById("tabel");
-  var data = [];
-
-  for(var i=1;i<t.rows.length;i++){
-    var row = [];
-    for(var j=0;j<7;j++){
-      row.push(t.rows[i].cells[j].innerHTML);
-    }
-    data.push(row);
-  }
-
-  localStorage.setItem("dataPajak", JSON.stringify(data));
-}
-
-// LOAD DATA
-function loadData(){
-  var data = JSON.parse(localStorage.getItem("dataPajak") || "[]");
-  var t = document.getElementById("tabel");
-
-  data.forEach(function(item){
-    var r = t.insertRow();
-
-    for(var i=0;i<7;i++){
-      r.insertCell(i).innerHTML = item[i];
-    }
-
-    r.insertCell(7).innerHTML = "<button onclick='hapus(this)'>X</button>";
-  });
-
-  total();
-}

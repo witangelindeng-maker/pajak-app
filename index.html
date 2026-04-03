@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aplikasi Pajak HP</title>
+<title>Hitung Pajak Barang </title>
 
 <style>
 body {
@@ -101,8 +101,8 @@ function hitung(){
     netto = bruto - (dpp*0.11) - (dpp*0.015);
   }
 
-  ppn = dpp*0.11;
-  pph = dpp*0.015;
+  ppn 11% = dpp*0.11;
+  pph 1,5% = dpp*0.015;
 
   document.getElementById("hasil").innerHTML =
     "DPP: " + formatAngka(dpp) + "<br>" +
@@ -157,8 +157,8 @@ function total(){
 
   document.getElementById("total").innerHTML =
     "TOTAL DPP: " + formatAngka(dpp) + "<br>" +
-    "TOTAL PPN: " + formatAngka(ppn) + "<br>" +
-    "TOTAL PPh: " + formatAngka(pph);
+    "TOTAL PPN 11%: " + formatAngka(ppn) + "<br>" +
+    "TOTAL PPh1,5%: " + formatAngka(pph);
 }
 
 </script>

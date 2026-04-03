@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplikasi Pajak HP</title>
+
+<style>
+body {font-family: Arial; background:#eef2f7; padding:10px;}
+.box {background:white; padding:15px; border-radius:10px; margin-bottom:15px;}
+input, select, button {width:100%; padding:10px; margin-top:10px; font-size:16px;}
+button {background:#4CAF50; color:white; border:none;}
+</style>
+
+<script>
+
+function formatAngka(angka){
+  angka = Math.round(angka);
+  var str = angka + "";
+  var hasil = "";
+  var hitung = 0;
+
+  for(var i=str.length-1;i>=0;i--){
+    hasil = str.charAt(i) + hasil;
+    hitung++;
+    if(hitung%3==0 && i!=0){
+      hasil = "." + hasil;
+    }
+  }
+  return hasil;
+}
+
+function hitung(){
+
+  var jenis = document.getElementById("jenis").value;
+  var nilaiText = document.getElementById("nilai").value;
+
+  if(nilaiText === ""){
+    alert("Isi nilai dulu!");
+    return;
+  }
+
+  var nilai = Number(nilaiText);
+
+  if(isNaN(nilai)){
+    alert("Harus angka!");
+    return;
+  }
+
+  var dpp=0, ppn=0, pph=0, bruto=0, netto=0;
+
+  if(jenis==="netto"){
+    netto = nilai;
+    bruto = (111/98.5)*netto;
+    dpp = bruto*100/111;
+  }
+  else if(jenis==="dpp"){
+    dpp = nilai;
+    bruto = dpp*1.11;
+    netto = bruto - (dpp*0.11) - (dpp*0.015);
+  }
+  else if(jenis==="bruto"){
+    bruto = nilai;
+    dpp = bruto*100/111;
+    netto = bruto - (dpp*0.11) - (dpp*0.015);
+  }
+
+  ppn = dpp*0.11;
+  pph = dpp*0.015;
+
+  var hasilText =
+    "DPP: " + formatAngka(dpp) + "<br>" +
+    "PPN: " + formatAngka(ppn) + "<br>" +
+    "PPh: " + formatAngka(pph) + "<br><br>" +
+    "Bruto: " + formatAngka(bruto) + "<br>" +
+    "Netto: " + formatAngka(netto);
+
+  document.getElementById("hasil").innerHTML = hasilText;
+
+  // debug (biar tau kalau jalan)
+  console.log("HITUNG JALAN");
+}
+
+</script>
+</head>
+
+<body>
+
+<div class="box">
+<h3>Input</h3>
+
+<select id="jenis">
+<option value="netto">Netto</option>
+<option value="dpp">DPP</option>
+<option value="bruto">Bruto</option>
+</select>
+
+<input type="number" id="nilai" placeholder="Masukkan nilai">
+
+<button onclick="hitung()">Hitung</button>
+</div>
+
+<div class="box">
+<h3>Hasil</h3>
+<div id="hasil">-</div>
+</div>
+
+</body>
+</html>
